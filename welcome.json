@@ -1,1 +1,0 @@
-{"id":"welcome","uuid":"c94ace6f-5745-4cc3-a910-16836d92c5b6","url":"http://localhost:5051","emoji":"🐙","introduction":"Send !welcome to see your current welcome message, and set a new one.","title":"Welcome Sender","description":"Sends a welcome message to your group when new members join.","event_types":["m.room.member","m.room.message"]}

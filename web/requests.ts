@@ -1,22 +1,16 @@
 const { origin, pathname } = window.location;
-const BASE_URL = `${origin}${pathname}`;
+const BASE_URL = `${origin}${pathname}`.replace(/\/$/, "");
 
-export async function getWelcomeMessage(roomId: string) {
-    const welcomeResponse = await fetch(`${BASE_URL}/api/welcome?roomId=${roomId}`);
-    const welcomeResult = await welcomeResponse.json();
+export async function getStatus() {
+    const statusResponse = await fetch(`${BASE_URL}/api/status`);
+    const statusResult = await statusResponse.json();
 
-    return welcomeResult;
+    return statusResult;
 }
 
-export async function postWelcome(roomId: string, welcomeMessage: string, directWelcome: boolean) {
-    return await fetch(`${BASE_URL}/api/welcome?roomId=${roomId}`, {
-        method: "POST",
-        body: JSON.stringify({
-            welcomeMessage,
-            directWelcome
-        }),
-        headers: {
-            "Content-type": "application/json"
-        }
-    })
+export async function postSync() {
+    const syncResponse = await fetch(`${BASE_URL}/api/sync`, { method: "POST" });
+    const syncResult = await syncResponse.json();
+
+    return syncResult;
 }

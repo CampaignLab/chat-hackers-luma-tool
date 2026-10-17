@@ -1,22 +1,21 @@
 body {
   font-family: sans-serif;
-  background-color: aquamarine;
+  background-color: #f5f3ef;
+  color: #1f1f1f;
+  margin: 0;
+  padding: 0 16px;
 }
 
 #root {
   display: flex;
   flex-direction: column;
   align-items: center;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 p {
-  margin: 0px;
-}
-
-#change-container {
-  display: flex;
-  flex-direction: column;
-  margin-top: 20px;
+  margin: 4px 0;
 }
 
 button {
@@ -24,7 +23,7 @@ button {
   background: #1d9e75;
   border: none;
   border-radius: 5px;
-  padding: 5px;
+  padding: 8px 12px;
   cursor: pointer;
   color: white;
 }
@@ -33,50 +32,27 @@ button:hover {
   background: #177557;
 }
 
-/* TOGGLE STYLE */
-
-.toggle-track {
-  position: relative;
-  display: inline-block;
-  width: 44px;
-  height: 24px;
+button:disabled {
+  background: #9aa5a0;
+  cursor: default;
 }
 
-.toggle-track input {
-  opacity: 0;
-  width: 0;
-  height: 0;
-  position: absolute;
+.bubble {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: #dcf8c6;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-top: 10px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.toggle-thumb {
-  position: absolute;
-  inset: 0;
-  background: #ccc;
-  border-radius: 24px;
-  transition: background 0.2s ease;
+.not-shared {
+  background: #e8e8e8;
+  color: #666;
 }
 
-.toggle-thumb::before {
-  content: "";
-  position: absolute;
-  width: 18px;
-  height: 18px;
-  left: 3px;
-  top: 3px;
-  background: white;
-  border-radius: 50%;
-  transition: transform 0.2s ease;
-}
-
-input:checked + .toggle-thumb {
-  background: #1d9e75;
-}
-
-input:checked + .toggle-thumb::before {
-  transform: translateX(20px);
-}
-
-input:focus-visible + .toggle-thumb {
-  box-shadow: 0 0 0 2px #5dcaa5;
+.error {
+  color: #b3261e;
 }

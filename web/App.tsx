@@ -1,66 +1,64 @@
 import "./App.css";
-import { useSearchParams, Link } from "react-router";
 import { useEffect, useState } from "react";
-import { getWelcomeMessage, postWelcome } from "./requests";
+import { getStatus, postSync } from "./requests";
+
+type Status = {
+  calendar?: string;
+  error?: string;
+  pollMinutes: number;
+  rooms: { roomId: string, subscribedAt: string, announced: number }[];
+  lastSync?: { time: string, posted: number, failed: string[], error?: string };
+  upcoming?: { id: string, name: string, visibility?: string, shared: boolean, preview: string }[];
+};
 
 export default function App() {
-  const [searchParams] = useSearchParams();
-  const roomId = searchParams.get("roomId");
-  const [currentGroupWelcome, setCurrentGroupWelcome] = useState("");
-  const [currentDirectWelcome, setCurrentDirectWelcome] = useState("");
-  const [welcomeGroupMessage, setWelcomeGroupMessage] = useState("");
-  const [welcomeDirectMessage, setWelcomeDirectMessage] = useState("");
+  const [status, setStatus] = useState<Status>();
+  const [syncing, setSyncing] = useState(false);
 
-  async function loadWelcome(roomId: string) {
-    const welcomeMessage = await getWelcomeMessage(roomId);
-    console.log(welcomeMessage);
-    setCurrentGroupWelcome(welcomeMessage.group_message);
-    setCurrentDirectWelcome(welcomeMessage.direct_message);
-    setWelcomeGroupMessage(welcomeMessage.group_message);
-    setWelcomeDirectMessage(welcomeMessage.direct_message);
+  async function loadStatus() {
+    setStatus(await getStatus());
   }
 
   useEffect(() => {
-    if (roomId) {
-      loadWelcome(roomId);
-    }
+    loadStatus();
   }, []);
 
-  async function updateWelcome(directWelcome: boolean) {
-    if (roomId) {
-      await postWelcome(
-        roomId,
-        directWelcome ? welcomeDirectMessage : welcomeGroupMessage,
-        directWelcome,
-      );
-      loadWelcome(roomId);
-    }
+  async function syncNow() {
+    setSyncing(true);
+    await postSync();
+    await loadStatus();
+    setSyncing(false);
   }
+
+  if (!status) return <p>Loading…</p>;
 
   return (
     <>
-      <h1>Welcome Tool</h1>
-      <h3>Use the text box below to set the auto-welcome for your group.</h3>
-      <p>The current group welcome is:</p>
-      <p>{currentGroupWelcome}</p>
-      <div id="change-container">
-        <textarea
-          value={welcomeGroupMessage}
-          onChange={(e) => setWelcomeGroupMessage(e.target.value)}
-        ></textarea>
-        <button onClick={() => updateWelcome(false)}>Update</button>
-      </div>
-      {/*
-          <p>The current direct welcome is:</p>
-      <p>{currentDirectWelcome}</p>
-      <div>
-        <textarea
-          value={welcomeDirectMessage}
-          onChange={(e) => setWelcomeDirectMessage(e.target.value)}
-        ></textarea>
-        <button onClick={() => updateWelcome(true)}>Update</button>
-      </div>
-        */}
+      <h1>Luma Bridge</h1>
+      <h3>{status.calendar ? `Sharing events from ${status.calendar}` : "Can't reach Luma"}</h3>
+      {status.error && <p className="error">{status.error}</p>}
+
+      <p>
+        Checks the calendar every {status.pollMinutes} minutes.{" "}
+        {status.lastSync && `Last check ${new Date(status.lastSync.time).toLocaleString()}: ${status.lastSync.posted} posted.`}
+      </p>
+      {status.lastSync?.error && <p className="error">{status.lastSync.error}</p>}
+      {status.lastSync?.failed.map(failure => <p key={failure} className="error">Not posted: {failure}</p>)}
+      <button disabled={syncing} onClick={syncNow}>{syncing ? "Checking…" : "Check now"}</button>
+
+      <h3>Groups ({status.rooms.length})</h3>
+      {status.rooms.length === 0 && <p>No groups yet. Send "!luma on" in a group with the tool switched on.</p>}
+      {status.rooms.map(room => (
+        <p key={room.roomId}>{room.roomId}: since {new Date(room.subscribedAt).toLocaleDateString()}, {room.announced} events tracked</p>
+      ))}
+
+      <h3>Upcoming events, as they'd be announced</h3>
+      {status.upcoming?.map(event => (
+        <div key={event.id} className={event.shared ? "bubble" : "bubble not-shared"}>
+          {!event.shared && <small>Not shared ({event.visibility})</small>}
+          {(event.shared ? "" : "\n") + event.preview}
+        </div>
+      ))}
     </>
   );
 }

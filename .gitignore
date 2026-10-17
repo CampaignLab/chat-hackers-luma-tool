@@ -1,5 +1,6 @@
 # Generated Files
-welome.json
+luma.json
+data/
 *.db
 *.db.wal
 

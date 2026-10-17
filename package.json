@@ -1,11 +1,11 @@
 {
-  "name": "welcome-tool",
+  "name": "luma-tool",
   "version": "1.0.0",
-  "description": "Welcome tool for Chat Hackers groups",
+  "description": "Shares events from a Luma calendar into Chat Hackers groups",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run build && node dist/test.js",
     "build": "npx tsc",
-    "start": "node dist/index.js",
+    "start": "node --env-file-if-exists=.env dist/index.js",
     "dev": "npm run build && npm start",
     "dev-web": "vite web",
     "build-web": "vite build web"
@@ -13,7 +13,6 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@duckdb/node-api": "^1.4.1-r.1",
     "express": "^5.1.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
