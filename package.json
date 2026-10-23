@@ -1,6 +1,9 @@
 {
   "name": "luma-tool",
   "version": "1.0.0",
+  "engines": {
+    "node": ">=24.22.1"
+  },
   "description": "Shares events from a Luma calendar into Chat Hackers groups",
   "scripts": {
     "test": "npm run build && node dist/test.js",
